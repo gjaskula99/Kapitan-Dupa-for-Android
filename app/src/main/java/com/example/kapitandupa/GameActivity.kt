@@ -1,5 +1,6 @@
 package com.example.kapitandupa
 
+import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -20,9 +21,9 @@ class GameActivity : AppCompatActivity() {
 
         val button = this.findViewById<Button>(R.id.rypanie)
         button.setOnClickListener{
-            //if(ready){
+            if(ready){
                 ryp()
-            //}
+            }
         }
     }
 
@@ -43,11 +44,24 @@ class GameActivity : AppCompatActivity() {
         }, 100)
     }
 
-    fun playSound() {
+    var stage : Int = 0
+    var delay : Long = 13000
+
+    fun timer() {
+        val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
+        val fiut2 = this.findViewById<ImageView>(R.id.fiut2)
+        val fiut3 = this.findViewById<ImageView>(R.id.fiut3)
+        val fiut4 = this.findViewById<ImageView>(R.id.fiut4)
+        val fiut5 = this.findViewById<ImageView>(R.id.fiut5)
+        val fiut6 = this.findViewById<ImageView>(R.id.fiut6)
+        val fiut7 = this.findViewById<ImageView>(R.id.fiut7)
+        val fiut8 = this.findViewById<ImageView>(R.id.fiut8)
+        val fiut9 = this.findViewById<ImageView>(R.id.fiut9)
+        val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
+
         val min = 1
         val max = 5
         val random: Int = Random().nextInt(max - min + 1) + min
-        var delay : Long = 13000
         Log.d("AUDIO", "Next playing rypanie for random $random")
         var mediaPlayer: MediaPlayer? = null
         var mKeepPlaying : Boolean = true
@@ -67,17 +81,41 @@ class GameActivity : AppCompatActivity() {
             5 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_trututututu)
                  //delay = 16000
             }
+            else -> Log.d("AUDIO", "Random out of range - $random")
         }
+
+        stage += 1
+        Log.d("GAME", "Stage is $stage")
+        when(stage) {
+            1 -> fiut1.setImageResource(R.drawable.lotos_2)
+            2 -> fiut2.setImageResource(R.drawable.lotos_2)
+            3 -> fiut3.setImageResource(R.drawable.lotos_2)
+            4 -> fiut4.setImageResource(R.drawable.lotos_2)
+            5 -> fiut5.setImageResource(R.drawable.lotos_2)
+            6 -> fiut6.setImageResource(R.drawable.lotos_2)
+            7 -> fiut7.setImageResource(R.drawable.lotos_2)
+            8 -> fiut8.setImageResource(R.drawable.lotos_2)
+            9 -> fiut9.setImageResource(R.drawable.lotos_2)
+            10 -> fiut10.setImageResource(R.drawable.lotos_2)
+            11 -> {
+                mKeepPlaying = false
+                mediaPlayer!!.stop()
+                val intent = Intent(this, GameOver::class.java).apply {  }
+                startActivity(intent)
+        }
+            else -> Log.d("GAME", "Stage out of range - $stage")
+        }
+
         val mHandler = Handler()
         mHandler.postDelayed(Runnable {
             if (isFinishing) {
                 // Check if the Activity is finishing.
                 return@Runnable
             }
-            mediaPlayer!!.start()
+            if(stage < 10) mediaPlayer!!.start()
             if (mKeepPlaying) {
                 // play the sound again in 10 seconds
-                playSound()
+                timer()
             }
         }, delay)
     }
@@ -88,9 +126,22 @@ class GameActivity : AppCompatActivity() {
         var mediaPlayer = MediaPlayer.create(this, R.raw.start)
         mediaPlayer.start()
         Log.d("AUDIO", "Media player started - raw.start")
-        Log.d("AUDIO", mediaPlayer.isPlaying.toString())
+        //Log.d("AUDIO", mediaPlayer.isPlaying.toString())
+        points = 0
+        stage = 0
+        ready = false
 
-        playSound()
+        val mHandler = Handler()
+        mHandler.postDelayed(Runnable {
+            Log.d("GAME", "Ready set to $ready")
+            ready = true
+            timer()
+        }, 10000)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
     }
 
 }
