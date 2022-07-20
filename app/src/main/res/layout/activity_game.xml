@@ -7,6 +7,42 @@
     android:background="@color/black"
     tools:context=".GameActivity">
 
+    <ImageView
+        android:id="@+id/fiut8"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut7"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut7"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut6"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut6"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut5"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut5"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut4"
+        app:srcCompat="@drawable/lotos_1" />
+
     <Button
         android:id="@+id/rypanie"
         android:layout_width="wrap_content"
@@ -19,6 +55,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/fiut10"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut9"
+        app:srcCompat="@drawable/lotos_1" />
 
     <ImageView
         android:id="@+id/piotrek"
@@ -39,5 +84,51 @@
         app:layout_constraintBottom_toTopOf="@+id/rypanie"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/dupa_1" />
+
+    <ImageView
+        android:id="@+id/fiut1"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        android:layout_marginStart="70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut9"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut8"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut2"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut1"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut3"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut2"
+        app:srcCompat="@drawable/lotos_1" />
+
+    <ImageView
+        android:id="@+id/fiut4"
+        android:layout_width="59dp"
+        android:layout_height="56dp"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/fiut3"
+        app:srcCompat="@drawable/lotos_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
