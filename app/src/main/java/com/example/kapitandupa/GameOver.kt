@@ -1,5 +1,6 @@
 package com.example.kapitandupa
 
+import android.content.Intent
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -26,6 +27,8 @@ class GameOver : AppCompatActivity() {
             mediaPlayer.start()
             button.setOnClickListener() {
                 Log.d("UI", "Restart button listener called")
+                val intent = Intent(this, GameActivity::class.java).apply {  }
+                startActivity(intent)
             }
         }, 4000)
     }

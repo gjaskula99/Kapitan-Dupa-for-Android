@@ -44,8 +44,9 @@ class GameActivity : AppCompatActivity() {
         }, 100)
     }
 
-    var stage : Int = 0
+    var stage : Int = 1
     var delay : Long = 13000
+    var playing : Boolean = true
 
     fun timer() {
         val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
@@ -64,7 +65,6 @@ class GameActivity : AppCompatActivity() {
         val random: Int = Random().nextInt(max - min + 1) + min
         Log.d("AUDIO", "Next playing rypanie for random $random")
         var mediaPlayer: MediaPlayer? = null
-        var mKeepPlaying : Boolean = true
         when(random) {
             1 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_jakbabe)
                  //delay = 10000
@@ -98,7 +98,7 @@ class GameActivity : AppCompatActivity() {
             9 -> fiut9.setImageResource(R.drawable.lotos_2)
             10 -> fiut10.setImageResource(R.drawable.lotos_2)
             11 -> {
-                mKeepPlaying = false
+                playing = false
                 mediaPlayer!!.stop()
                 val intent = Intent(this, GameOver::class.java).apply {  }
                 startActivity(intent)
@@ -112,8 +112,10 @@ class GameActivity : AppCompatActivity() {
                 // Check if the Activity is finishing.
                 return@Runnable
             }
+            Log.d("GAME", "Playing is $playing")
             if(stage < 10) mediaPlayer!!.start()
-            if (mKeepPlaying) {
+            //if(playing == true) mediaPlayer!!.start()
+            if (playing == true) {
                 // play the sound again in 10 seconds
                 timer()
             }
@@ -130,18 +132,47 @@ class GameActivity : AppCompatActivity() {
         points = 0
         stage = 0
         ready = false
+        playing = true
+
+        val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
+        val fiut2 = this.findViewById<ImageView>(R.id.fiut2)
+        val fiut3 = this.findViewById<ImageView>(R.id.fiut3)
+        val fiut4 = this.findViewById<ImageView>(R.id.fiut4)
+        val fiut5 = this.findViewById<ImageView>(R.id.fiut5)
+        val fiut6 = this.findViewById<ImageView>(R.id.fiut6)
+        val fiut7 = this.findViewById<ImageView>(R.id.fiut7)
+        val fiut8 = this.findViewById<ImageView>(R.id.fiut8)
+        val fiut9 = this.findViewById<ImageView>(R.id.fiut9)
+        val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
+        fiut1.setImageResource(R.drawable.lotos_1)
+        fiut2.setImageResource(R.drawable.lotos_1)
+        fiut3.setImageResource(R.drawable.lotos_1)
+        fiut4.setImageResource(R.drawable.lotos_1)
+        fiut5.setImageResource(R.drawable.lotos_1)
+        fiut6.setImageResource(R.drawable.lotos_1)
+        fiut7.setImageResource(R.drawable.lotos_1)
+        fiut8.setImageResource(R.drawable.lotos_1)
+        fiut9.setImageResource(R.drawable.lotos_1)
+        fiut10.setImageResource(R.drawable.lotos_1)
 
         val mHandler = Handler()
         mHandler.postDelayed(Runnable {
-            Log.d("GAME", "Ready set to $ready")
             ready = true
+            Log.d("GAME", "Ready set to $ready")
             timer()
         }, 10000)
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.d("GAME", "Game activity paused")
+        playing = false
+        Log.d("GAME", "Playing is $playing")
+    }
+
     override fun onStop() {
         super.onStop()
-
+        Log.d("GAME", "Game activity stopped")
     }
 
 }
