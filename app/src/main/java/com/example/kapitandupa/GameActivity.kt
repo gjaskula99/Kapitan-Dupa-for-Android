@@ -7,6 +7,7 @@ import android.os.Handler
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
@@ -17,7 +18,7 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        Log.d("GAME", "Activity started")
+        Log.d("GAME", "Activity created")
 
         val button = this.findViewById<Button>(R.id.rypanie)
         button.setOnClickListener{
@@ -25,12 +26,53 @@ class GameActivity : AppCompatActivity() {
                 ryp()
             }
         }
+        val scoreTXT = this.findViewById<TextView>(R.id.scoreTXT)
+        scoreTXT.setText("SCORE")
+        val score = this.findViewById<TextView>(R.id.score)
+        score.setText("0")
+
+        var mediaPlayer = MediaPlayer.create(this, R.raw.start)
+        mediaPlayer.start()
+        points = 0
+        stage = 10 //0 for normal start, 10 for game over debugging
+        ready = false
+        playing = true
+
+        val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
+        val fiut2 = this.findViewById<ImageView>(R.id.fiut2)
+        val fiut3 = this.findViewById<ImageView>(R.id.fiut3)
+        val fiut4 = this.findViewById<ImageView>(R.id.fiut4)
+        val fiut5 = this.findViewById<ImageView>(R.id.fiut5)
+        val fiut6 = this.findViewById<ImageView>(R.id.fiut6)
+        val fiut7 = this.findViewById<ImageView>(R.id.fiut7)
+        val fiut8 = this.findViewById<ImageView>(R.id.fiut8)
+        val fiut9 = this.findViewById<ImageView>(R.id.fiut9)
+        val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
+        fiut1.setImageResource(R.drawable.lotos_1)
+        fiut2.setImageResource(R.drawable.lotos_1)
+        fiut3.setImageResource(R.drawable.lotos_1)
+        fiut4.setImageResource(R.drawable.lotos_1)
+        fiut5.setImageResource(R.drawable.lotos_1)
+        fiut6.setImageResource(R.drawable.lotos_1)
+        fiut7.setImageResource(R.drawable.lotos_1)
+        fiut8.setImageResource(R.drawable.lotos_1)
+        fiut9.setImageResource(R.drawable.lotos_1)
+        fiut10.setImageResource(R.drawable.lotos_1)
+
+        val mHandler = Handler()
+        mHandler.postDelayed(Runnable {
+            ready = true
+            Log.d("GAME", "Ready set to $ready")
+            timer()
+        }, 10000)
     }
 
     fun ryp() {
         Log.d("GAME", "Rypanie karabinem")
         val dupa = this.findViewById<ImageView>(R.id.dupa)
         val piotrek = this.findViewById<ImageView>(R.id.piotrek)
+        val score = this.findViewById<TextView>(R.id.score)
+        score.setText(points.toString())
         points += 1
         Log.d("GAME", "Points set to $points")
         //var mediaPlayer = MediaPlayer.create(this, R.raw.rypanie)
@@ -125,54 +167,31 @@ class GameActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d("GAME", "Activity resumed")
-        var mediaPlayer = MediaPlayer.create(this, R.raw.start)
-        mediaPlayer.start()
-        Log.d("AUDIO", "Media player started - raw.start")
-        //Log.d("AUDIO", mediaPlayer.isPlaying.toString())
-        points = 0
-        stage = 0
-        ready = false
-        playing = true
-
-        val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
-        val fiut2 = this.findViewById<ImageView>(R.id.fiut2)
-        val fiut3 = this.findViewById<ImageView>(R.id.fiut3)
-        val fiut4 = this.findViewById<ImageView>(R.id.fiut4)
-        val fiut5 = this.findViewById<ImageView>(R.id.fiut5)
-        val fiut6 = this.findViewById<ImageView>(R.id.fiut6)
-        val fiut7 = this.findViewById<ImageView>(R.id.fiut7)
-        val fiut8 = this.findViewById<ImageView>(R.id.fiut8)
-        val fiut9 = this.findViewById<ImageView>(R.id.fiut9)
-        val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
-        fiut1.setImageResource(R.drawable.lotos_1)
-        fiut2.setImageResource(R.drawable.lotos_1)
-        fiut3.setImageResource(R.drawable.lotos_1)
-        fiut4.setImageResource(R.drawable.lotos_1)
-        fiut5.setImageResource(R.drawable.lotos_1)
-        fiut6.setImageResource(R.drawable.lotos_1)
-        fiut7.setImageResource(R.drawable.lotos_1)
-        fiut8.setImageResource(R.drawable.lotos_1)
-        fiut9.setImageResource(R.drawable.lotos_1)
-        fiut10.setImageResource(R.drawable.lotos_1)
-
-        val mHandler = Handler()
-        mHandler.postDelayed(Runnable {
-            ready = true
-            Log.d("GAME", "Ready set to $ready")
-            timer()
-        }, 10000)
+        /*Log.d("AUDIO", "Media player started - raw.start")
+        *///Log.d("AUDIO", mediaPlayer.isPlaying.toString())
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("GAME", "Game activity paused")
-        playing = false
-        Log.d("GAME", "Playing is $playing")
     }
 
     override fun onStop() {
         super.onStop()
         Log.d("GAME", "Game activity stopped")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        playing = false
+        Log.d("GAME", "Game activity destroyed")
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
 }

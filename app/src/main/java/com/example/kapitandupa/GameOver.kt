@@ -12,12 +12,7 @@ class GameOver : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_over)
-        Log.d("GAME", "Game over started")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("GAME", "Game over resumed")
+        Log.d("GAME", "Game over created")
         val button : Button = this.findViewById<Button>(R.id.restart)
         var mediaPlayer = MediaPlayer.create(this, R.raw.gameover)
         mediaPlayer.start()
@@ -25,11 +20,20 @@ class GameOver : AppCompatActivity() {
         mHandler.postDelayed(Runnable {
             mediaPlayer = MediaPlayer.create(this, R.raw.lowscore)
             mediaPlayer.start()
+        }, 4000)
+        mHandler.postDelayed(Runnable {
             button.setOnClickListener() {
                 Log.d("UI", "Restart button listener called")
                 val intent = Intent(this, GameActivity::class.java).apply {  }
                 startActivity(intent)
             }
-        }, 4000)
+        }, 12000)
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 }
