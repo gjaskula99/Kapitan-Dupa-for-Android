@@ -34,7 +34,7 @@ class GameActivity : AppCompatActivity() {
         var mediaPlayer = MediaPlayer.create(this, R.raw.start)
         mediaPlayer.start()
         points = 0
-        stage = 10 //0 for normal start, 10 for game over debugging
+        stage = 0 //0 for normal start, 10 for game over debugging
         ready = false
         playing = true
 
