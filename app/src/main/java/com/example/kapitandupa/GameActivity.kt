@@ -73,7 +73,7 @@ class GameActivity : AppCompatActivity() {
         val piotrek = this.findViewById<ImageView>(R.id.piotrek)
         val score = this.findViewById<TextView>(R.id.score)
         score.setText(points.toString())
-        points += 1
+        points += 1 * stage
         Log.d("GAME", "Points set to $points")
         //var mediaPlayer = MediaPlayer.create(this, R.raw.rypanie)
         //mediaPlayer.start()
@@ -89,6 +89,13 @@ class GameActivity : AppCompatActivity() {
     var stage : Int = 1
     var delay : Long = 13000
     var playing : Boolean = true
+    var toGameOver: Boolean = false
+
+    fun gameover() {
+        playing = false
+        val intent = Intent(this, GameOver::class.java).apply {  }
+        startActivity(intent)
+    }
 
     fun timer() {
         val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
@@ -105,49 +112,77 @@ class GameActivity : AppCompatActivity() {
         val min = 1
         val max = 5
         val random: Int = Random().nextInt(max - min + 1) + min
-        Log.d("AUDIO", "Next playing rypanie for random $random")
+        Log.d("AUDIO", "Playing rypanie for random $random")
         var mediaPlayer: MediaPlayer? = null
-        when(random) {
-            1 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_jakbabe)
-                 //delay = 10000
+        //if(!toGameOver) {
+            when(random) {
+                1 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_jakbabe)
+                //delay = 10000
             }
-            2 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_kolba)
-                 //delay = 16000
+                2 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_kolba)
+                //delay = 16000
             }
-            3 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_nie)
-                 //delay = 7000
+                3 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_nie)
+                //delay = 7000
             }
-            4 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_nieczuje)
-                 //delay = 8000
+                4 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_nieczuje)
+                //delay = 8000
             }
-            5 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_trututututu)
-                 //delay = 16000
+                5 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_trututututu)
+                //delay = 16000
             }
-            else -> Log.d("AUDIO", "Random out of range - $random")
-        }
+                else -> Log.d("AUDIO", "Random out of range - $random")
+            }
+        //}
 
         stage += 1
         Log.d("GAME", "Stage is $stage")
         when(stage) {
             1 -> fiut1.setImageResource(R.drawable.lotos_2)
-            2 -> fiut2.setImageResource(R.drawable.lotos_2)
-            3 -> fiut3.setImageResource(R.drawable.lotos_2)
-            4 -> fiut4.setImageResource(R.drawable.lotos_2)
-            5 -> fiut5.setImageResource(R.drawable.lotos_2)
-            6 -> fiut6.setImageResource(R.drawable.lotos_2)
-            7 -> fiut7.setImageResource(R.drawable.lotos_2)
-            8 -> fiut8.setImageResource(R.drawable.lotos_2)
-            9 -> fiut9.setImageResource(R.drawable.lotos_2)
-            10 -> fiut10.setImageResource(R.drawable.lotos_2)
+            2 -> {
+                fiut2.setImageResource(R.drawable.lotos_2)
+                if(points < 10) toGameOver = true
+            }
+            3 -> {
+                fiut3.setImageResource(R.drawable.lotos_2)
+                if(points < 50) toGameOver = true
+            }
+            4 -> {
+                fiut4.setImageResource(R.drawable.lotos_2)
+                if(points < 100) toGameOver = true
+            }
+            5 -> {
+                fiut5.setImageResource(R.drawable.lotos_2)
+                if(points < 200) toGameOver = true
+            }
+            6 -> {
+                fiut6.setImageResource(R.drawable.lotos_2)
+                if(points < 500) toGameOver = true
+            }
+            7 -> {
+                fiut7.setImageResource(R.drawable.lotos_2)
+                if(points < 1000) toGameOver = true
+            }
+            8 -> {
+                fiut8.setImageResource(R.drawable.lotos_2)
+                if(points < 2000) toGameOver = true
+            }
+            9 -> {
+                fiut9.setImageResource(R.drawable.lotos_2)
+                if(points < 5000) toGameOver = true
+            }
+            10 -> {
+                fiut10.setImageResource(R.drawable.lotos_2)
+            }
             11 -> {
-                playing = false
                 mediaPlayer!!.stop()
-                val intent = Intent(this, GameOver::class.java).apply {  }
-                startActivity(intent)
+                gameover()
+
         }
             else -> Log.d("GAME", "Stage out of range - $stage")
         }
 
+        Log.d("GAME", "Game over is $toGameOver")
         val mHandler = Handler()
         mHandler.postDelayed(Runnable {
             if (isFinishing) {
@@ -155,13 +190,14 @@ class GameActivity : AppCompatActivity() {
                 return@Runnable
             }
             Log.d("GAME", "Playing is $playing")
-            if(stage < 10) mediaPlayer!!.start()
             //if(playing == true) mediaPlayer!!.start()
             if (playing == true) {
                 // play the sound again in 10 seconds
                 timer()
             }
         }, delay)
+        if(toGameOver) gameover()
+        else mediaPlayer!!.start()
     }
 
     override fun onResume() {
