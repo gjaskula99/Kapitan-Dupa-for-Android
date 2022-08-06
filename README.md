@@ -11,10 +11,10 @@ Powyższe repozytorium jest implementacją słynnego Kapitana Dupy na urządzeni
 ## Dane techniczne
 - Minimalna wersja API - 26 (Android 8.0 Oreo)
 - Napisane w Kotlinie dla AS Bumblebee
-- Testowane dla AVD z API 30. Testy na sprzęcie planowane w przyszłości
+- Testowane dla AVD z API 30. Testy na sprzęcie - Samsung Galaxy A71 (API 30)
 
 ## Uwagi / znane błędy
-- Na ten moment brak
+- Intro lubi się wywalić po opuszczeniu aplikacji (WIP)
 
 # Uwaga prawna - Legal disclaimer
 
