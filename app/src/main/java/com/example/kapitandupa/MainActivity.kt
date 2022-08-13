@@ -10,6 +10,8 @@ import android.widget.Toast
 import android.widget.VideoView
 
 class MainActivity : AppCompatActivity() {
+    var stopPosition : Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,6 +30,22 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, GameActivity::class.java).apply {  }
             startActivity(intent)
         }
+    }
+
+    override fun onPause() {
+        Log.d("INTRO", "Paused")
+        super.onPause()
+        val intro = findViewById<View>(R.id.video_intro) as VideoView
+        stopPosition = intro.getCurrentPosition();
+        intro.pause()
+    }
+
+    override fun onResume() {
+        Log.d("INTRO", "Resumed")
+        super.onResume()
+        val intro = findViewById<View>(R.id.video_intro) as VideoView
+        intro.seekTo(stopPosition)
+        intro.start()
     }
 
     override fun onBackPressed() {

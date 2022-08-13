@@ -141,38 +141,39 @@ class GameActivity : AppCompatActivity() {
             1 -> fiut1.setImageResource(R.drawable.lotos_2)
             2 -> {
                 fiut2.setImageResource(R.drawable.lotos_2)
-                if(points < 10) toGameOver = true
+                if(points < 20) toGameOver = true
             }
             3 -> {
                 fiut3.setImageResource(R.drawable.lotos_2)
-                if(points < 50) toGameOver = true
+                if(points < 80) toGameOver = true
             }
             4 -> {
                 fiut4.setImageResource(R.drawable.lotos_2)
-                if(points < 100) toGameOver = true
+                if(points < 200) toGameOver = true
             }
             5 -> {
                 fiut5.setImageResource(R.drawable.lotos_2)
-                if(points < 200) toGameOver = true
+                if(points < 500) toGameOver = true
             }
             6 -> {
                 fiut6.setImageResource(R.drawable.lotos_2)
-                if(points < 500) toGameOver = true
+                if(points < 1000) toGameOver = true
             }
             7 -> {
                 fiut7.setImageResource(R.drawable.lotos_2)
-                if(points < 1000) toGameOver = true
+                if(points < 2000) toGameOver = true
             }
             8 -> {
                 fiut8.setImageResource(R.drawable.lotos_2)
-                if(points < 2000) toGameOver = true
+                if(points < 4000) toGameOver = true
             }
             9 -> {
                 fiut9.setImageResource(R.drawable.lotos_2)
-                if(points < 5000) toGameOver = true
+                if(points < 8000) toGameOver = true
             }
             10 -> {
                 fiut10.setImageResource(R.drawable.lotos_2)
+                if(points < 10000) toGameOver = true
             }
             11 -> {
                 mediaPlayer!!.stop()
