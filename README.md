@@ -14,7 +14,7 @@ Powyższe repozytorium jest implementacją słynnego Kapitana Dupy na urządzeni
 - Testowane dla AVD z API 30. Testy na sprzęcie - Samsung Galaxy A71 (API 30)
 
 ## Uwagi / znane błędy
-- Intro lubi się wywalić po opuszczeniu aplikacji (WIP)
+- ~Intro lubi się wywalić po opuszczeniu aplikacji~
 
 # Uwaga prawna - Legal disclaimer
 
