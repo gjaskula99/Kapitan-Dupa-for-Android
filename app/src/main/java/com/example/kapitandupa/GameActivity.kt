@@ -83,7 +83,7 @@ class GameActivity : AppCompatActivity() {
         handler.postDelayed(Runnable {
             dupa.setImageResource(R.drawable.dupa_1)
             piotrek.setImageResource(R.drawable.piotrek_1)
-        }, 100)
+        }, 50)
     }
 
     var stage : Int = 1
@@ -110,7 +110,7 @@ class GameActivity : AppCompatActivity() {
         val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
 
         val min = 1
-        val max = 5
+        val max = 13
         val random: Int = Random().nextInt(max - min + 1) + min
         Log.d("AUDIO", "Playing rypanie for random $random")
         var mediaPlayer: MediaPlayer? = null
@@ -131,6 +131,30 @@ class GameActivity : AppCompatActivity() {
                 5 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_trututututu)
                 //delay = 16000
             }
+                6 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_dopalacze)
+                    //delay = 16000
+                }
+                7 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_kawalerze)
+                    //delay = 16000
+                }
+                8 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_laser)
+                    //delay = 16000
+                }
+                9 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_maaaa)
+                    //delay = 16000
+                }
+                10 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_maaaa2)
+                    //delay = 16000
+                }
+                11 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_obrotowa)
+                    //delay = 16000
+                }
+                12 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_piana)
+                    //delay = 16000
+                }
+                13 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_torpedy)
+                    //delay = 16000
+                }
                 else -> Log.d("AUDIO", "Random out of range - $random")
             }
         //}
@@ -141,38 +165,39 @@ class GameActivity : AppCompatActivity() {
             1 -> fiut1.setImageResource(R.drawable.lotos_2)
             2 -> {
                 fiut2.setImageResource(R.drawable.lotos_2)
-                if(points < 10) toGameOver = true
+                if(points < 20) toGameOver = true
             }
             3 -> {
                 fiut3.setImageResource(R.drawable.lotos_2)
-                if(points < 50) toGameOver = true
+                if(points < 80) toGameOver = true
             }
             4 -> {
                 fiut4.setImageResource(R.drawable.lotos_2)
-                if(points < 100) toGameOver = true
+                if(points < 200) toGameOver = true
             }
             5 -> {
                 fiut5.setImageResource(R.drawable.lotos_2)
-                if(points < 200) toGameOver = true
+                if(points < 500) toGameOver = true
             }
             6 -> {
                 fiut6.setImageResource(R.drawable.lotos_2)
-                if(points < 500) toGameOver = true
+                if(points < 1000) toGameOver = true
             }
             7 -> {
                 fiut7.setImageResource(R.drawable.lotos_2)
-                if(points < 1000) toGameOver = true
+                if(points < 2000) toGameOver = true
             }
             8 -> {
                 fiut8.setImageResource(R.drawable.lotos_2)
-                if(points < 2000) toGameOver = true
+                if(points < 4000) toGameOver = true
             }
             9 -> {
                 fiut9.setImageResource(R.drawable.lotos_2)
-                if(points < 5000) toGameOver = true
+                if(points < 8000) toGameOver = true
             }
             10 -> {
                 fiut10.setImageResource(R.drawable.lotos_2)
+                if(points < 10000) toGameOver = true
             }
             11 -> {
                 mediaPlayer!!.stop()
