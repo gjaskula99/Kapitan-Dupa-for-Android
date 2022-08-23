@@ -83,7 +83,7 @@ class GameActivity : AppCompatActivity() {
         handler.postDelayed(Runnable {
             dupa.setImageResource(R.drawable.dupa_1)
             piotrek.setImageResource(R.drawable.piotrek_1)
-        }, 100)
+        }, 50)
     }
 
     var stage : Int = 1
@@ -110,7 +110,7 @@ class GameActivity : AppCompatActivity() {
         val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
 
         val min = 1
-        val max = 5
+        val max = 13
         val random: Int = Random().nextInt(max - min + 1) + min
         Log.d("AUDIO", "Playing rypanie for random $random")
         var mediaPlayer: MediaPlayer? = null
@@ -131,6 +131,30 @@ class GameActivity : AppCompatActivity() {
                 5 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_trututututu)
                 //delay = 16000
             }
+                6 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_dopalacze)
+                    //delay = 16000
+                }
+                7 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_kawalerze)
+                    //delay = 16000
+                }
+                8 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_laser)
+                    //delay = 16000
+                }
+                9 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_maaaa)
+                    //delay = 16000
+                }
+                10 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_maaaa2)
+                    //delay = 16000
+                }
+                11 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_obrotowa)
+                    //delay = 16000
+                }
+                12 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_piana)
+                    //delay = 16000
+                }
+                13 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_torpedy)
+                    //delay = 16000
+                }
                 else -> Log.d("AUDIO", "Random out of range - $random")
             }
         //}
