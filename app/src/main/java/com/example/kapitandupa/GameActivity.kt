@@ -4,21 +4,35 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
 class GameActivity : AppCompatActivity() {
     var ready : Boolean = false
     var points : Int = 0
+    private var startMediaPlayer: MediaPlayer? = null
+    private var currentLoopMediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
         Log.d("GAME", "Activity created")
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(intent)
+            }
+        })
 
         val button = this.findViewById<Button>(R.id.rypanie)
         button.setOnClickListener{
@@ -31,8 +45,14 @@ class GameActivity : AppCompatActivity() {
         val score = this.findViewById<TextView>(R.id.score)
         score.setText("0")
 
-        var mediaPlayer = MediaPlayer.create(this, R.raw.start)
-        mediaPlayer.start()
+        startMediaPlayer = MediaPlayer.create(this, R.raw.start)
+        startMediaPlayer?.apply {
+            setOnCompletionListener { mp ->
+                mp.release()
+                startMediaPlayer = null
+            }
+            start()
+        }
         points = 0
         stage = 0 //0 for normal start, 10 for game over debugging
         ready = false
@@ -59,7 +79,7 @@ class GameActivity : AppCompatActivity() {
         fiut9.setImageResource(R.drawable.lotos_1)
         fiut10.setImageResource(R.drawable.lotos_1)
 
-        val mHandler = Handler()
+        val mHandler = Handler(Looper.getMainLooper())
         mHandler.postDelayed(Runnable {
             ready = true
             Log.d("GAME", "Ready set to $ready")
@@ -79,7 +99,7 @@ class GameActivity : AppCompatActivity() {
         //mediaPlayer.start()
         dupa.setImageResource(R.drawable.dupa_2)
         piotrek.setImageResource(R.drawable.pioterk_2)
-        val handler = Handler()
+        val handler = Handler(Looper.getMainLooper())
         handler.postDelayed(Runnable {
             dupa.setImageResource(R.drawable.dupa_1)
             piotrek.setImageResource(R.drawable.piotrek_1)
@@ -113,6 +133,11 @@ class GameActivity : AppCompatActivity() {
         val max = 13
         val random: Int = Random().nextInt(max - min + 1) + min
         Log.d("AUDIO", "Playing rypanie for random $random")
+
+        // Release previous MediaPlayer before creating new one
+        currentLoopMediaPlayer?.release()
+        currentLoopMediaPlayer = null
+
         var mediaPlayer: MediaPlayer? = null
         //if(!toGameOver) {
             when(random) {
@@ -158,6 +183,9 @@ class GameActivity : AppCompatActivity() {
                 else -> Log.d("AUDIO", "Random out of range - $random")
             }
         //}
+
+        // Store reference to current MediaPlayer
+        currentLoopMediaPlayer = mediaPlayer
 
         stage += 1
         Log.d("GAME", "Stage is $stage")
@@ -208,7 +236,7 @@ class GameActivity : AppCompatActivity() {
         }
 
         Log.d("GAME", "Game over is $toGameOver")
-        val mHandler = Handler()
+        val mHandler = Handler(Looper.getMainLooper())
         mHandler.postDelayed(Runnable {
             if (isFinishing) {
                 // Check if the Activity is finishing.
@@ -222,7 +250,7 @@ class GameActivity : AppCompatActivity() {
             }
         }, delay)
         if(toGameOver) gameover()
-        else mediaPlayer!!.start()
+        else currentLoopMediaPlayer?.start()
     }
 
     override fun onResume() {
@@ -240,19 +268,20 @@ class GameActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         Log.d("GAME", "Game activity stopped")
+        startMediaPlayer?.release()
+        startMediaPlayer = null
+        currentLoopMediaPlayer?.release()
+        currentLoopMediaPlayer = null
     }
 
     override fun onDestroy() {
         super.onDestroy()
         playing = false
         Log.d("GAME", "Game activity destroyed")
-    }
-
-    override fun onBackPressed() {
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        startMediaPlayer?.release()
+        startMediaPlayer = null
+        currentLoopMediaPlayer?.release()
+        currentLoopMediaPlayer = null
     }
 
 }

@@ -12,10 +12,11 @@ This is an Android game remake based on a Polish cartoon "Kapitan Dupa" from the
 
 ### Requirements
 - Android Studio Bumblebee or later
-- Minimum API: 32 (Android 8.0 Oreo, though build.gradle shows minSdk 32)
-- Compiled with SDK 32
+- Minimum API: 32 (Android 12)
+- Compiled with SDK 35 (Android 15)
+- Target SDK: 35
 - Kotlin 1.8.10
-- Gradle 8.1.0
+- Gradle 8.5
 
 ### Build Commands
 ```bash
@@ -51,6 +52,14 @@ This is an Android game remake based on a Polish cartoon "Kapitan Dupa" from the
 - Tested on AVD with API 30
 - Tested on physical device: Samsung Galaxy A71 (API 30)
 - App runs in landscape orientation only
+- Supports API 32-35
+
+### Recent Updates (v1.2)
+- Upgraded to API 35 (Android 15)
+- Fixed Handler deprecations (now uses Looper.getMainLooper())
+- Implemented proper MediaPlayer resource management to prevent memory leaks
+- Replaced deprecated onBackPressed() with OnBackPressedDispatcher
+- Updated dependencies to API 35-compatible versions
 
 ## Code Architecture
 
