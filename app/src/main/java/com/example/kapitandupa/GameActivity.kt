@@ -13,11 +13,52 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
+data class AudioFile(
+    val resource: Int,
+    val durationSeconds: Double
+)
+
 class GameActivity : AppCompatActivity() {
     var ready : Boolean = false
     var points : Int = 0
     private var startMediaPlayer: MediaPlayer? = null
     private var currentLoopMediaPlayer: MediaPlayer? = null
+
+    // All 13 audio files with their durations
+    private val audioFiles = arrayOf(
+        AudioFile(R.raw.rypanie_obrotowa, 4.0),
+        AudioFile(R.raw.rypanie_nieczuje, 4.0),
+        AudioFile(R.raw.rypanie_nie, 5.0),
+        AudioFile(R.raw.rypanie_dopalacze, 6.0),
+        AudioFile(R.raw.rypanie_kawalerze, 6.0),
+        AudioFile(R.raw.rypanie_jakbabe, 6.0),
+        AudioFile(R.raw.rypanie_laser, 9.0),
+        AudioFile(R.raw.rypanie_maaaa, 9.0),
+        AudioFile(R.raw.rypanie_maaaa2, 10.0),
+        AudioFile(R.raw.rypanie_torpedy, 10.0),
+        AudioFile(R.raw.rypanie_piana, 11.0),
+        AudioFile(R.raw.rypanie_trututututu, 12.0),
+        AudioFile(R.raw.rypanie_kolba, 13.0)
+    )
+
+    private var lastAudioIndex: Int = -1
+    private var cumulativeThreshold: Int = 0
+    private var currentAudio: AudioFile? = null
+
+    private fun selectNextAudio(): AudioFile {
+        var randomIndex: Int
+        do {
+            randomIndex = Random().nextInt(audioFiles.size)
+        } while (randomIndex == lastAudioIndex && audioFiles.size > 1)
+
+        lastAudioIndex = randomIndex
+        return audioFiles[randomIndex]
+    }
+
+    private fun getStageDurationMs(audio: AudioFile): Long {
+        // Add 1 second margin to audio duration
+        return ((audio.durationSeconds + 1.0) * 1000).toLong()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +76,9 @@ class GameActivity : AppCompatActivity() {
         })
 
         val button = this.findViewById<Button>(R.id.rypanie)
+        // Disable button initially (greyed out)
+        button.isEnabled = false
+        button.alpha = 0.5f
         button.setOnClickListener{
             if(ready){
                 ryp()
@@ -82,6 +126,10 @@ class GameActivity : AppCompatActivity() {
         val mHandler = Handler(Looper.getMainLooper())
         mHandler.postDelayed(Runnable {
             ready = true
+            // Enable button when ready
+            val button = findViewById<Button>(R.id.rypanie)
+            button.isEnabled = true
+            button.alpha = 1.0f
             Log.d("GAME", "Ready set to $ready")
             timer()
         }, 10000)
@@ -106,10 +154,11 @@ class GameActivity : AppCompatActivity() {
         }, 50)
     }
 
-    var stage : Int = 1
-    var delay : Long = 13000
+    var stage : Int = 0
     var playing : Boolean = true
     var toGameOver: Boolean = false
+    private var isPaused: Boolean = false
+    private var wasAudioPlaying: Boolean = false
 
     fun gameover() {
         playing = false
@@ -118,151 +167,105 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun timer() {
-        val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
-        val fiut2 = this.findViewById<ImageView>(R.id.fiut2)
-        val fiut3 = this.findViewById<ImageView>(R.id.fiut3)
-        val fiut4 = this.findViewById<ImageView>(R.id.fiut4)
-        val fiut5 = this.findViewById<ImageView>(R.id.fiut5)
-        val fiut6 = this.findViewById<ImageView>(R.id.fiut6)
-        val fiut7 = this.findViewById<ImageView>(R.id.fiut7)
-        val fiut8 = this.findViewById<ImageView>(R.id.fiut8)
-        val fiut9 = this.findViewById<ImageView>(R.id.fiut9)
-        val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
+        // Increment stage
+        stage += 1
+        Log.d("GAME", "Stage is $stage, Points: $points")
 
-        val min = 1
-        val max = 13
-        val random: Int = Random().nextInt(max - min + 1) + min
-        Log.d("AUDIO", "Playing rypanie for random $random")
+        // Check if game should end after stage 10
+        if (stage > 10) {
+            playing = false
+            Log.d("GAME", "Stage 10 completed, ending game")
+            gameover()
+            return
+        }
+
+        // Select random audio file (excluding previous)
+        currentAudio = selectNextAudio()
+        val audio = currentAudio!!
+        val stageDuration = audio.durationSeconds + 1.0 // Add 1 second margin
+
+        Log.d("GAME", "Stage $stage: Selected audio with duration ${audio.durationSeconds}s")
+
+        // Calculate required points for this stage
+        // Required hits: stage * duration (e.g., stage 1 = 1 hit/sec, stage 2 = 2 hits/sec)
+        val requiredHits = (stage * stageDuration).toInt()
+        // Points per hit in this stage = stage number
+        val pointsThisStage = requiredHits * stage
+        // Update cumulative threshold
+        val previousThreshold = cumulativeThreshold
+        cumulativeThreshold += pointsThisStage
+
+        Log.d("GAME", "Stage $stage: Required $requiredHits hits, $pointsThisStage points this stage, cumulative threshold: $cumulativeThreshold")
+
+        // Update fiut visual indicator for current stage
+        val fiutId = resources.getIdentifier("fiut$stage", "id", packageName)
+        val fiut = findViewById<ImageView>(fiutId)
+        fiut?.setImageResource(R.drawable.lotos_2)
+
+        // Check if player met the previous stage's threshold
+        if (stage > 1 && points < previousThreshold) {
+            Log.d("GAME", "Failed stage ${stage - 1}: $points < $previousThreshold")
+            toGameOver = true
+        }
 
         // Release previous MediaPlayer before creating new one
         currentLoopMediaPlayer?.release()
         currentLoopMediaPlayer = null
 
-        var mediaPlayer: MediaPlayer? = null
-        //if(!toGameOver) {
-            when(random) {
-                1 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_jakbabe)
-                //delay = 10000
-            }
-                2 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_kolba)
-                //delay = 16000
-            }
-                3 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_nie)
-                //delay = 7000
-            }
-                4 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_nieczuje)
-                //delay = 8000
-            }
-                5 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_trututututu)
-                //delay = 16000
-            }
-                6 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_dopalacze)
-                    //delay = 16000
-                }
-                7 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_kawalerze)
-                    //delay = 16000
-                }
-                8 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_laser)
-                    //delay = 16000
-                }
-                9 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_maaaa)
-                    //delay = 16000
-                }
-                10 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_maaaa2)
-                    //delay = 16000
-                }
-                11 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_obrotowa)
-                    //delay = 16000
-                }
-                12 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_piana)
-                    //delay = 16000
-                }
-                13 -> {mediaPlayer = MediaPlayer.create(this, R.raw.rypanie_torpedy)
-                    //delay = 16000
-                }
-                else -> Log.d("AUDIO", "Random out of range - $random")
-            }
-        //}
-
-        // Store reference to current MediaPlayer
+        // Create MediaPlayer for this stage's randomly selected audio
+        val mediaPlayer = MediaPlayer.create(this, audio.resource)
         currentLoopMediaPlayer = mediaPlayer
 
-        stage += 1
-        Log.d("GAME", "Stage is $stage")
-        when(stage) {
-            1 -> fiut1.setImageResource(R.drawable.lotos_2)
-            2 -> {
-                fiut2.setImageResource(R.drawable.lotos_2)
-                if(points < 20) toGameOver = true
-            }
-            3 -> {
-                fiut3.setImageResource(R.drawable.lotos_2)
-                if(points < 80) toGameOver = true
-            }
-            4 -> {
-                fiut4.setImageResource(R.drawable.lotos_2)
-                if(points < 200) toGameOver = true
-            }
-            5 -> {
-                fiut5.setImageResource(R.drawable.lotos_2)
-                if(points < 500) toGameOver = true
-            }
-            6 -> {
-                fiut6.setImageResource(R.drawable.lotos_2)
-                if(points < 1000) toGameOver = true
-            }
-            7 -> {
-                fiut7.setImageResource(R.drawable.lotos_2)
-                if(points < 2000) toGameOver = true
-            }
-            8 -> {
-                fiut8.setImageResource(R.drawable.lotos_2)
-                if(points < 4000) toGameOver = true
-            }
-            9 -> {
-                fiut9.setImageResource(R.drawable.lotos_2)
-                if(points < 8000) toGameOver = true
-            }
-            10 -> {
-                fiut10.setImageResource(R.drawable.lotos_2)
-                if(points < 10000) toGameOver = true
-            }
-            11 -> {
-                mediaPlayer!!.stop()
-                gameover()
-
-        }
-            else -> Log.d("GAME", "Stage out of range - $stage")
-        }
+        // Calculate delay for this stage (audio duration + 1 second margin)
+        val delay = getStageDurationMs(audio)
+        Log.d("GAME", "Stage $stage delay: ${delay}ms")
 
         Log.d("GAME", "Game over is $toGameOver")
+
+        // Schedule next stage
         val mHandler = Handler(Looper.getMainLooper())
         mHandler.postDelayed(Runnable {
-            if (isFinishing) {
-                // Check if the Activity is finishing.
+            if (isFinishing || isPaused) {
                 return@Runnable
             }
             Log.d("GAME", "Playing is $playing")
-            //if(playing == true) mediaPlayer!!.start()
-            if (playing == true) {
-                // play the sound again in 10 seconds
-                timer()
+            if (playing == true && !isPaused) {
+                timer() // Recursive call for next stage
             }
         }, delay)
-        if(toGameOver) gameover()
-        else currentLoopMediaPlayer?.start()
+
+        // Start audio or trigger game over (only if not paused)
+        if(toGameOver) {
+            gameover()
+        } else if (!isPaused) {
+            currentLoopMediaPlayer?.start()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         Log.d("GAME", "Activity resumed")
-        /*Log.d("AUDIO", "Media player started - raw.start")
-        *///Log.d("AUDIO", mediaPlayer.isPlaying.toString())
+        isPaused = false
+
+        // Resume audio if it was playing before pause
+        if (wasAudioPlaying) {
+            startMediaPlayer?.takeIf { !it.isPlaying }?.start()
+            currentLoopMediaPlayer?.takeIf { !it.isPlaying }?.start()
+            wasAudioPlaying = false
+        }
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("GAME", "Game activity paused")
+        isPaused = true
+
+        // Track if audio was playing and pause it
+        wasAudioPlaying = (startMediaPlayer?.isPlaying == true) ||
+                          (currentLoopMediaPlayer?.isPlaying == true)
+
+        startMediaPlayer?.pause()
+        currentLoopMediaPlayer?.pause()
     }
 
     override fun onStop() {

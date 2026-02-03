@@ -58,6 +58,21 @@ class GameOver : AppCompatActivity() {
         }, 12000)
     }
 
+    override fun onPause() {
+        super.onPause()
+        Log.d("GAME", "Game over activity paused")
+        gameOverMediaPlayer?.pause()
+        lowScoreMediaPlayer?.pause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("GAME", "Game over activity resumed")
+        // Resume audio if it was playing
+        gameOverMediaPlayer?.takeIf { !it.isPlaying }?.start()
+        lowScoreMediaPlayer?.takeIf { !it.isPlaying }?.start()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         gameOverMediaPlayer?.release()
