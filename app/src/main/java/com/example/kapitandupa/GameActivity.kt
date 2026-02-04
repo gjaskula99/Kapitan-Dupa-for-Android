@@ -162,7 +162,9 @@ class GameActivity : AppCompatActivity() {
 
     fun gameover() {
         playing = false
-        val intent = Intent(this, GameOver::class.java).apply {  }
+        val intent = Intent(this, GameOver::class.java).apply {
+            putExtra("FINAL_SCORE", points)
+        }
         startActivity(intent)
     }
 

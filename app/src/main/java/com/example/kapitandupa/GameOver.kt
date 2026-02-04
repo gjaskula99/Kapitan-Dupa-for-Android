@@ -29,33 +29,59 @@ class GameOver : AppCompatActivity() {
             }
         })
 
-        val button : Button = this.findViewById<Button>(R.id.restart)
+        val finalScore = intent.getIntExtra("FINAL_SCORE", 0)
+        val isHighScore = LeaderboardManager.isHighScore(this, finalScore)
+
+        val restartButton: Button = findViewById(R.id.restart)
+        val viewLeaderboardButton: Button = findViewById(R.id.view_leaderboard)
+
         gameOverMediaPlayer = MediaPlayer.create(this, R.raw.gameover)
         gameOverMediaPlayer?.apply {
             setOnCompletionListener { mp ->
                 mp.release()
                 gameOverMediaPlayer = null
+
+                // Route based on high score status
+                if (isHighScore) {
+                    val intent = Intent(this@GameOver, HighScoreActivity::class.java).apply {
+                        putExtra("FINAL_SCORE", finalScore)
+                    }
+                    startActivity(intent)
+                    finish()
+                }
             }
             start()
         }
-        val mHandler = Handler(Looper.getMainLooper())
-        mHandler.postDelayed(Runnable {
-            lowScoreMediaPlayer = MediaPlayer.create(this, R.raw.lowscore)
-            lowScoreMediaPlayer?.apply {
-                setOnCompletionListener { mp ->
-                    mp.release()
-                    lowScoreMediaPlayer = null
+
+        if (!isHighScore) {
+            // Low score path: play lowscore audio and enable buttons
+            val mHandler = Handler(Looper.getMainLooper())
+            mHandler.postDelayed(Runnable {
+                lowScoreMediaPlayer = MediaPlayer.create(this, R.raw.lowscore)
+                lowScoreMediaPlayer?.apply {
+                    setOnCompletionListener { mp ->
+                        mp.release()
+                        lowScoreMediaPlayer = null
+
+                        // Show buttons after audio completes
+                        restartButton.visibility = Button.VISIBLE
+                        restartButton.setOnClickListener {
+                            Log.d("UI", "Restart button listener called")
+                            val intent = Intent(this@GameOver, GameActivity::class.java).apply { }
+                            startActivity(intent)
+                        }
+
+                        viewLeaderboardButton.visibility = Button.VISIBLE
+                        viewLeaderboardButton.setOnClickListener {
+                            Log.d("UI", "View leaderboard button listener called")
+                            val intent = Intent(this@GameOver, LeaderboardActivity::class.java)
+                            startActivity(intent)
+                        }
+                    }
+                    start()
                 }
-                start()
-            }
-        }, 4000)
-        mHandler.postDelayed(Runnable {
-            button.setOnClickListener() {
-                Log.d("UI", "Restart button listener called")
-                val intent = Intent(this, GameActivity::class.java).apply {  }
-                startActivity(intent)
-            }
-        }, 12000)
+            }, 4000)
+        }
     }
 
     override fun onPause() {
