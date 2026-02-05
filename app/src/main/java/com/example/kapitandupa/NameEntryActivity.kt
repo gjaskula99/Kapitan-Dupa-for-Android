@@ -65,16 +65,14 @@ class NameEntryActivity : AppCompatActivity() {
 
     private fun submitName() {
         var name = nameInput.text.toString().trim().uppercase()
-
-        // Trim all non-uppercase-letter characters (keep only A-Z)
-        name = name.replace("*", "")
-        name = name.filter { it in 'A'..'Z' }
-
         // Check if name is longer than 5 characters
         if (name.length > 5) {
             Toast.makeText(this, "Ah tylko 5 liter wchodzi", Toast.LENGTH_SHORT).show()
             return
         }
+        // Trim all non-uppercase-letter characters (keep only A-Z)
+        name = name.replace("*", "")
+        name = name.filter { it in 'A'..'Z' }
 
         // Name cannot be empty
         if (name.isEmpty()) {

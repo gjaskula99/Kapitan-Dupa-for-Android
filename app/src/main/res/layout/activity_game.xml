@@ -7,158 +7,231 @@
     android:background="@color/black"
     tools:context=".GameActivity">
 
-    <ImageView
-        android:id="@+id/fiut8"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut7"
-        app:srcCompat="@drawable/lotos_1" />
+    <!-- Merged characters - centered horizontally -->
 
     <ImageView
-        android:id="@+id/fiut7"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut6"
-        app:srcCompat="@drawable/lotos_1" />
+        android:id="@+id/characters"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/infoBoxes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/dupa_merge_1" />
 
-    <ImageView
-        android:id="@+id/fiut6"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut5"
-        app:srcCompat="@drawable/lotos_1" />
+    <!-- Three info boxes at the bottom -->
+    <LinearLayout
+        android:id="@+id/infoBoxes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:weightSum="10"
+        app:layout_constraintBottom_toTopOf="@+id/rypanie"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-    <ImageView
-        android:id="@+id/fiut5"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut4"
-        app:srcCompat="@drawable/lotos_1" />
+        <!-- SCORE Box (~10% width) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/green_box_border"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="4dp">
 
+            <TextView
+                android:id="@+id/scoreTXT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SCORE"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- HIT Box (~70% width) with HIT text on left -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="7"
+            android:background="@drawable/green_box_border"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="HIT"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/fiut1"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut2"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut3"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut4"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut5"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut6"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut7"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut8"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut9"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+
+                <ImageView
+                    android:id="@+id/fiut10"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_weight="1"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:srcCompat="@drawable/lotos_1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- SHOT Box (~10% width) -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/green_box_border"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SHOT"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/roundText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0/SEK"
+                android:textColor="@android:color/holo_green_light"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- SHOT Button at the very bottom -->
     <Button
         android:id="@+id/rypanie"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:backgroundTint="@color/black"
         android:text="SHOT"
         android:textColor="@android:color/holo_green_light"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.945"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/fiut10"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut9"
-        app:srcCompat="@drawable/lotos_1" />
-
-    <ImageView
-        android:id="@+id/piotrek"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="96dp"
-        android:layout_marginStart="340dp"
-        app:layout_constraintBottom_toTopOf="@+id/rypanie"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/piotrek_1" />
-
-    <ImageView
-        android:id="@+id/dupa"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="92dp"
-        android:layout_marginStart="290dp"
-        app:layout_constraintBottom_toTopOf="@+id/rypanie"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/dupa_1" />
-
-    <ImageView
-        android:id="@+id/fiut1"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        android:layout_marginStart="70dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/lotos_1" />
-
-    <ImageView
-        android:id="@+id/fiut9"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut8"
-        app:srcCompat="@drawable/lotos_1" />
-
-    <ImageView
-        android:id="@+id/fiut2"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut1"
-        app:srcCompat="@drawable/lotos_1" />
-
-    <ImageView
-        android:id="@+id/fiut3"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut2"
-        app:srcCompat="@drawable/lotos_1" />
-
-    <ImageView
-        android:id="@+id/fiut4"
-        android:layout_width="59dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fiut3"
-        app:srcCompat="@drawable/lotos_1" />
-
-    <TextView
-        android:id="@+id/scoreTXT"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="70dp"
-        android:layout_marginBottom="24dp"
-        android:autoSizeTextType="uniform"
-        android:autoSizeMinTextSize="12sp"
-        android:autoSizeMaxTextSize="100sp"
-        android:autoSizeStepGranularity="2sp"
-        android:textColor="@android:color/holo_green_light"
-        android:text="SCORE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="24dp"
-        android:autoSizeMaxTextSize="100sp"
-        android:autoSizeMinTextSize="12sp"
-        android:autoSizeStepGranularity="2sp"
-        android:autoSizeTextType="uniform"
-        android:textColor="@android:color/holo_green_light"
-        android:text="0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/scoreTXT" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

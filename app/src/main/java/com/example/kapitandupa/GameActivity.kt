@@ -127,7 +127,6 @@ class GameActivity : AppCompatActivity() {
         mHandler.postDelayed(Runnable {
             ready = true
             // Enable button when ready
-            val button = findViewById<Button>(R.id.rypanie)
             button.isEnabled = true
             button.alpha = 1.0f
             Log.d("GAME", "Ready set to $ready")
@@ -137,20 +136,17 @@ class GameActivity : AppCompatActivity() {
 
     fun ryp() {
         Log.d("GAME", "Rypanie karabinem")
-        val dupa = this.findViewById<ImageView>(R.id.dupa)
-        val piotrek = this.findViewById<ImageView>(R.id.piotrek)
+        val characters = this.findViewById<ImageView>(R.id.characters)
         val score = this.findViewById<TextView>(R.id.score)
         score.setText(points.toString())
         points += 1 * stage
         Log.d("GAME", "Points set to $points")
         //var mediaPlayer = MediaPlayer.create(this, R.raw.rypanie)
         //mediaPlayer.start()
-        dupa.setImageResource(R.drawable.dupa_2)
-        piotrek.setImageResource(R.drawable.pioterk_2)
+        characters.setImageResource(R.drawable.dupa_merge_2)
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed(Runnable {
-            dupa.setImageResource(R.drawable.dupa_1)
-            piotrek.setImageResource(R.drawable.piotrek_1)
+            characters.setImageResource(R.drawable.dupa_merge_1)
         }, 50)
     }
 
@@ -172,6 +168,10 @@ class GameActivity : AppCompatActivity() {
         // Increment stage
         stage += 1
         Log.d("GAME", "Stage is $stage, Points: $points")
+
+        // Update round display
+        val roundText = findViewById<TextView>(R.id.roundText)
+        roundText.text = "$stage/SEK"
 
         // Check if game should end after stage 10
         if (stage > 10) {
