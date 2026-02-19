@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import android.widget.VideoView
 
 class MainActivity : AppCompatActivity() {
@@ -34,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         intro.requestFocus()
         intro.start()
 
-        intro!!.setOnCompletionListener {
+        intro.setOnCompletionListener {
             //Toast.makeText(applicationContext, "Video completed",
                 //Toast.LENGTH_LONG).show()
             Log.d("INTRO", "Finished. Starting game activity")

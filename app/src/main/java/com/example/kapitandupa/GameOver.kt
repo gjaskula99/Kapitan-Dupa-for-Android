@@ -13,6 +13,49 @@ import android.widget.Button
 class GameOver : AppCompatActivity() {
     private var gameOverMediaPlayer: MediaPlayer? = null
     private var lowScoreMediaPlayer: MediaPlayer? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private var lowScoreStartRunnable: Runnable? = null
+    private var lowScoreDelayMs: Long = LOW_SCORE_DELAY_MS
+    private var lowScoreDelayRemainingMs: Long = LOW_SCORE_DELAY_MS
+    private var lowScoreDelayScheduledAtMs: Long = 0L
+    private var wasGameOverAudioPlaying: Boolean = false
+    private var wasLowScoreAudioPlaying: Boolean = false
+    private var isLowScoreFlow: Boolean = false
+
+    private fun scheduleLowScoreFlow(delayMs: Long) {
+        val runnable = lowScoreStartRunnable ?: return
+        mainHandler.removeCallbacks(runnable)
+        lowScoreDelayMs = delayMs
+        lowScoreDelayRemainingMs = delayMs
+        lowScoreDelayScheduledAtMs = android.os.SystemClock.elapsedRealtime()
+        mainHandler.postDelayed(runnable, delayMs)
+    }
+
+    private fun pauseLowScoreFlow() {
+        val runnable = lowScoreStartRunnable ?: return
+        val elapsed = android.os.SystemClock.elapsedRealtime() - lowScoreDelayScheduledAtMs
+        lowScoreDelayRemainingMs = (lowScoreDelayMs - elapsed).coerceAtLeast(0L)
+        mainHandler.removeCallbacks(runnable)
+    }
+
+    private fun resumeLowScoreFlow() {
+        if (isLowScoreFlow && lowScoreStartRunnable != null && lowScoreDelayRemainingMs >= 0L) {
+            scheduleLowScoreFlow(lowScoreDelayRemainingMs)
+        }
+    }
+
+    private fun clearLowScoreFlow(resetState: Boolean) {
+        lowScoreStartRunnable?.let(mainHandler::removeCallbacks)
+        if (resetState) {
+            lowScoreStartRunnable = null
+            lowScoreDelayRemainingMs = LOW_SCORE_DELAY_MS
+        }
+    }
+
+    companion object {
+        private const val LOW_SCORE_DELAY_MS = 4_000L
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,10 +96,16 @@ class GameOver : AppCompatActivity() {
             start()
         }
 
-        if (!isHighScore) {
+        isLowScoreFlow = !isHighScore
+
+        if (isLowScoreFlow) {
             // Low score path: play lowscore audio and enable buttons
-            val mHandler = Handler(Looper.getMainLooper())
-            mHandler.postDelayed(Runnable {
+            lowScoreStartRunnable = Runnable {
+                lowScoreStartRunnable = null
+                lowScoreDelayRemainingMs = 0L
+                if (isFinishing || isDestroyed) {
+                    return@Runnable
+                }
                 lowScoreMediaPlayer = MediaPlayer.create(this, R.raw.lowscore)
                 lowScoreMediaPlayer?.apply {
                     setOnCompletionListener { mp ->
@@ -80,13 +129,17 @@ class GameOver : AppCompatActivity() {
                     }
                     start()
                 }
-            }, 4000)
+            }
+            scheduleLowScoreFlow(LOW_SCORE_DELAY_MS)
         }
     }
 
     override fun onPause() {
         super.onPause()
         Log.d("GAME", "Game over activity paused")
+        wasGameOverAudioPlaying = gameOverMediaPlayer?.isPlaying == true
+        wasLowScoreAudioPlaying = lowScoreMediaPlayer?.isPlaying == true
+        pauseLowScoreFlow()
         gameOverMediaPlayer?.pause()
         lowScoreMediaPlayer?.pause()
     }
@@ -94,13 +147,25 @@ class GameOver : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         Log.d("GAME", "Game over activity resumed")
-        // Resume audio if it was playing
-        gameOverMediaPlayer?.takeIf { !it.isPlaying }?.start()
-        lowScoreMediaPlayer?.takeIf { !it.isPlaying }?.start()
+        if (wasGameOverAudioPlaying) {
+            gameOverMediaPlayer?.takeIf { !it.isPlaying }?.start()
+            wasGameOverAudioPlaying = false
+        }
+        if (wasLowScoreAudioPlaying) {
+            lowScoreMediaPlayer?.takeIf { !it.isPlaying }?.start()
+            wasLowScoreAudioPlaying = false
+        }
+        resumeLowScoreFlow()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        clearLowScoreFlow(resetState = false)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        clearLowScoreFlow(resetState = true)
         gameOverMediaPlayer?.release()
         gameOverMediaPlayer = null
         lowScoreMediaPlayer?.release()

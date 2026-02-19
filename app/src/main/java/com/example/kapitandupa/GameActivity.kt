@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -23,6 +24,25 @@ class GameActivity : AppCompatActivity() {
     var points : Int = 0
     private var startMediaPlayer: MediaPlayer? = null
     private var currentLoopMediaPlayer: MediaPlayer? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    private lateinit var shootButton: Button
+    private lateinit var charactersImage: ImageView
+    private lateinit var scoreValueText: TextView
+    private lateinit var roundText: TextView
+    private lateinit var stageIndicators: List<ImageView>
+
+    private var startGameRunnable: Runnable? = null
+    private var nextStageRunnable: Runnable? = null
+    private var characterResetRunnable: Runnable? = null
+
+    private var startDelayMs: Long = START_DELAY_MS
+    private var startDelayRemainingMs: Long = START_DELAY_MS
+    private var startDelayScheduledAtMs: Long = 0L
+
+    private var nextStageDelayMs: Long = 0L
+    private var nextStageDelayRemainingMs: Long = 0L
+    private var nextStageDelayScheduledAtMs: Long = 0L
 
     // All 13 audio files with their durations
     private val audioFiles = arrayOf(
@@ -60,6 +80,95 @@ class GameActivity : AppCompatActivity() {
         return ((audio.durationSeconds + 1.0) * 1000).toLong()
     }
 
+    private fun scheduleStartGame(delayMs: Long) {
+        if (ready || isFinishing || !playing) {
+            return
+        }
+
+        if (startGameRunnable == null) {
+            startGameRunnable = Runnable {
+                startGameRunnable = null
+                startDelayRemainingMs = 0L
+                if (isFinishing || isPaused || !playing) {
+                    return@Runnable
+                }
+                ready = true
+                shootButton.isEnabled = true
+                shootButton.alpha = 1.0f
+                Log.d("GAME", "Ready set to $ready")
+                timer()
+            }
+        }
+
+        val runnable = startGameRunnable ?: return
+        mainHandler.removeCallbacks(runnable)
+        startDelayMs = delayMs
+        startDelayRemainingMs = delayMs
+        startDelayScheduledAtMs = SystemClock.elapsedRealtime()
+        mainHandler.postDelayed(runnable, delayMs)
+    }
+
+    private fun pauseStartGameCountdown() {
+        val runnable = startGameRunnable ?: return
+        val elapsed = SystemClock.elapsedRealtime() - startDelayScheduledAtMs
+        startDelayRemainingMs = (startDelayMs - elapsed).coerceAtLeast(0L)
+        mainHandler.removeCallbacks(runnable)
+    }
+
+    private fun scheduleNextStage(delayMs: Long) {
+        nextStageRunnable?.let(mainHandler::removeCallbacks)
+        val runnable = Runnable {
+            nextStageRunnable = null
+            nextStageDelayRemainingMs = 0L
+            if (isFinishing || isPaused || !playing) {
+                return@Runnable
+            }
+            Log.d("GAME", "Playing is $playing")
+            timer()
+        }
+        nextStageRunnable = runnable
+        nextStageDelayMs = delayMs
+        nextStageDelayRemainingMs = delayMs
+        nextStageDelayScheduledAtMs = SystemClock.elapsedRealtime()
+        mainHandler.postDelayed(runnable, delayMs)
+    }
+
+    private fun pauseNextStageCountdown() {
+        val runnable = nextStageRunnable ?: return
+        val elapsed = SystemClock.elapsedRealtime() - nextStageDelayScheduledAtMs
+        nextStageDelayRemainingMs = (nextStageDelayMs - elapsed).coerceAtLeast(0L)
+        mainHandler.removeCallbacks(runnable)
+    }
+
+    private fun resumePendingCountdowns() {
+        if (!ready && startGameRunnable != null && startDelayRemainingMs >= 0L) {
+            scheduleStartGame(startDelayRemainingMs)
+        }
+        if (ready && nextStageRunnable != null && nextStageDelayRemainingMs >= 0L) {
+            val runnable = nextStageRunnable ?: return
+            nextStageDelayMs = nextStageDelayRemainingMs
+            nextStageDelayScheduledAtMs = SystemClock.elapsedRealtime()
+            mainHandler.postDelayed(runnable, nextStageDelayRemainingMs)
+        }
+    }
+
+    private fun removeAllCallbacks(resetState: Boolean) {
+        startGameRunnable?.let(mainHandler::removeCallbacks)
+        nextStageRunnable?.let(mainHandler::removeCallbacks)
+        characterResetRunnable?.let(mainHandler::removeCallbacks)
+        if (resetState) {
+            startGameRunnable = null
+            nextStageRunnable = null
+            characterResetRunnable = null
+            startDelayRemainingMs = START_DELAY_MS
+            nextStageDelayRemainingMs = 0L
+        }
+    }
+
+    companion object {
+        private const val START_DELAY_MS = 10_000L
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -75,19 +184,34 @@ class GameActivity : AppCompatActivity() {
             }
         })
 
-        val button = this.findViewById<Button>(R.id.rypanie)
+        shootButton = this.findViewById(R.id.rypanie)
+        charactersImage = this.findViewById(R.id.characters)
+        scoreValueText = this.findViewById(R.id.score)
+        roundText = this.findViewById(R.id.roundText)
+        stageIndicators = listOf(
+            this.findViewById(R.id.fiut1),
+            this.findViewById(R.id.fiut2),
+            this.findViewById(R.id.fiut3),
+            this.findViewById(R.id.fiut4),
+            this.findViewById(R.id.fiut5),
+            this.findViewById(R.id.fiut6),
+            this.findViewById(R.id.fiut7),
+            this.findViewById(R.id.fiut8),
+            this.findViewById(R.id.fiut9),
+            this.findViewById(R.id.fiut10)
+        )
+
         // Disable button initially (greyed out)
-        button.isEnabled = false
-        button.alpha = 0.5f
-        button.setOnClickListener{
+        shootButton.isEnabled = false
+        shootButton.alpha = 0.5f
+        shootButton.setOnClickListener{
             if(ready){
                 ryp()
             }
         }
         val scoreTXT = this.findViewById<TextView>(R.id.scoreTXT)
         scoreTXT.setText("SCORE")
-        val score = this.findViewById<TextView>(R.id.score)
-        score.setText("0")
+        scoreValueText.setText("0")
 
         startMediaPlayer = MediaPlayer.create(this, R.raw.start)
         startMediaPlayer?.apply {
@@ -101,53 +225,27 @@ class GameActivity : AppCompatActivity() {
         stage = 0 //0 for normal start, 10 for game over debugging
         ready = false
         playing = true
+        toGameOver = false
+        cumulativeThreshold = 0
+        startDelayRemainingMs = START_DELAY_MS
 
-        val fiut1 = this.findViewById<ImageView>(R.id.fiut1)
-        val fiut2 = this.findViewById<ImageView>(R.id.fiut2)
-        val fiut3 = this.findViewById<ImageView>(R.id.fiut3)
-        val fiut4 = this.findViewById<ImageView>(R.id.fiut4)
-        val fiut5 = this.findViewById<ImageView>(R.id.fiut5)
-        val fiut6 = this.findViewById<ImageView>(R.id.fiut6)
-        val fiut7 = this.findViewById<ImageView>(R.id.fiut7)
-        val fiut8 = this.findViewById<ImageView>(R.id.fiut8)
-        val fiut9 = this.findViewById<ImageView>(R.id.fiut9)
-        val fiut10 = this.findViewById<ImageView>(R.id.fiut10)
-        fiut1.setImageResource(R.drawable.lotos_1)
-        fiut2.setImageResource(R.drawable.lotos_1)
-        fiut3.setImageResource(R.drawable.lotos_1)
-        fiut4.setImageResource(R.drawable.lotos_1)
-        fiut5.setImageResource(R.drawable.lotos_1)
-        fiut6.setImageResource(R.drawable.lotos_1)
-        fiut7.setImageResource(R.drawable.lotos_1)
-        fiut8.setImageResource(R.drawable.lotos_1)
-        fiut9.setImageResource(R.drawable.lotos_1)
-        fiut10.setImageResource(R.drawable.lotos_1)
+        stageIndicators.forEach { it.setImageResource(R.drawable.lotos_1) }
 
-        val mHandler = Handler(Looper.getMainLooper())
-        mHandler.postDelayed(Runnable {
-            ready = true
-            // Enable button when ready
-            button.isEnabled = true
-            button.alpha = 1.0f
-            Log.d("GAME", "Ready set to $ready")
-            timer()
-        }, 10000)
+        scheduleStartGame(START_DELAY_MS)
     }
 
     fun ryp() {
         Log.d("GAME", "Rypanie karabinem")
-        val characters = this.findViewById<ImageView>(R.id.characters)
-        val score = this.findViewById<TextView>(R.id.score)
-        score.setText(points.toString())
-        points += 1 * stage
+        points += stage
+        scoreValueText.setText(points.toString())
         Log.d("GAME", "Points set to $points")
-        //var mediaPlayer = MediaPlayer.create(this, R.raw.rypanie)
-        //mediaPlayer.start()
-        characters.setImageResource(R.drawable.dupa_merge_2)
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed(Runnable {
-            characters.setImageResource(R.drawable.dupa_merge_1)
-        }, 50)
+        charactersImage.setImageResource(R.drawable.dupa_merge_2)
+        characterResetRunnable?.let(mainHandler::removeCallbacks)
+        characterResetRunnable = Runnable {
+            charactersImage.setImageResource(R.drawable.dupa_merge_1)
+            characterResetRunnable = null
+        }
+        mainHandler.postDelayed(characterResetRunnable!!, 50)
     }
 
     var stage : Int = 0
@@ -158,6 +256,7 @@ class GameActivity : AppCompatActivity() {
 
     fun gameover() {
         playing = false
+        removeAllCallbacks(resetState = true)
         val intent = Intent(this, GameOver::class.java).apply {
             putExtra("FINAL_SCORE", points)
         }
@@ -170,7 +269,6 @@ class GameActivity : AppCompatActivity() {
         Log.d("GAME", "Stage is $stage, Points: $points")
 
         // Update round display
-        val roundText = findViewById<TextView>(R.id.roundText)
         roundText.text = "$stage/SEK"
 
         // Check if game should end after stage 10
@@ -200,14 +298,21 @@ class GameActivity : AppCompatActivity() {
         Log.d("GAME", "Stage $stage: Required $requiredHits hits, $pointsThisStage points this stage, cumulative threshold: $cumulativeThreshold")
 
         // Update fiut visual indicator for current stage
-        val fiutId = resources.getIdentifier("fiut$stage", "id", packageName)
-        val fiut = findViewById<ImageView>(fiutId)
-        fiut?.setImageResource(R.drawable.lotos_2)
+        if (stage in 1..stageIndicators.size) {
+            stageIndicators[stage - 1].setImageResource(R.drawable.lotos_2)
+        }
 
         // Check if player met the previous stage's threshold
         if (stage > 1 && points < previousThreshold) {
             Log.d("GAME", "Failed stage ${stage - 1}: $points < $previousThreshold")
             toGameOver = true
+        }
+
+        if (toGameOver) {
+            currentLoopMediaPlayer?.release()
+            currentLoopMediaPlayer = null
+            gameover()
+            return
         }
 
         // Release previous MediaPlayer before creating new one
@@ -224,22 +329,10 @@ class GameActivity : AppCompatActivity() {
 
         Log.d("GAME", "Game over is $toGameOver")
 
-        // Schedule next stage
-        val mHandler = Handler(Looper.getMainLooper())
-        mHandler.postDelayed(Runnable {
-            if (isFinishing || isPaused) {
-                return@Runnable
-            }
-            Log.d("GAME", "Playing is $playing")
-            if (playing == true && !isPaused) {
-                timer() // Recursive call for next stage
-            }
-        }, delay)
+        scheduleNextStage(delay)
 
         // Start audio or trigger game over (only if not paused)
-        if(toGameOver) {
-            gameover()
-        } else if (!isPaused) {
+        if (!isPaused) {
             currentLoopMediaPlayer?.start()
         }
     }
@@ -255,6 +348,7 @@ class GameActivity : AppCompatActivity() {
             currentLoopMediaPlayer?.takeIf { !it.isPlaying }?.start()
             wasAudioPlaying = false
         }
+        resumePendingCountdowns()
     }
 
     override fun onPause() {
@@ -266,6 +360,10 @@ class GameActivity : AppCompatActivity() {
         wasAudioPlaying = (startMediaPlayer?.isPlaying == true) ||
                           (currentLoopMediaPlayer?.isPlaying == true)
 
+        pauseStartGameCountdown()
+        pauseNextStageCountdown()
+        characterResetRunnable?.let(mainHandler::removeCallbacks)
+
         startMediaPlayer?.pause()
         currentLoopMediaPlayer?.pause()
     }
@@ -273,6 +371,7 @@ class GameActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         Log.d("GAME", "Game activity stopped")
+        removeAllCallbacks(resetState = false)
         startMediaPlayer?.release()
         startMediaPlayer = null
         currentLoopMediaPlayer?.release()
@@ -283,6 +382,7 @@ class GameActivity : AppCompatActivity() {
         super.onDestroy()
         playing = false
         Log.d("GAME", "Game activity destroyed")
+        removeAllCallbacks(resetState = true)
         startMediaPlayer?.release()
         startMediaPlayer = null
         currentLoopMediaPlayer?.release()
