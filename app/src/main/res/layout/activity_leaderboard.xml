@@ -5,16 +5,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".GameOver">
+    tools:context=".LeaderboardActivity">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/restart_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NAJLEPSZE WYNIKI"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_green_light"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:id="@+id/scores_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <Button
-        android:id="@+id/restart"
+        android:id="@+id/restart_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
         android:backgroundTint="@color/black"
         android:text="Spróbuj jeszcze raz"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -26,13 +62,12 @@
         android:textColor="@android:color/holo_green_light"/>
 
     <Button
-        android:id="@+id/view_leaderboard"
+        android:id="@+id/reset_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/black"
-        android:text="Zobacz ranking"
-        android:visibility="gone"
+        android:text="Wyczyść ranking"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -43,14 +78,4 @@
         android:autoSizeTextType="uniform"
         android:textColor="@android:color/holo_green_light"/>
 
-    <ImageView
-        android:id="@+id/gameOver"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gameover" />
 </androidx.constraintlayout.widget.ConstraintLayout>

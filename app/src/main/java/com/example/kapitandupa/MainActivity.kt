@@ -2,11 +2,11 @@ package com.example.kapitandupa
 
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import android.widget.VideoView
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +16,16 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_HOME)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                startActivity(intent)
+            }
+        })
+
         Log.d("INTRO", "Now playing")
         val intro = findViewById<View>(R.id.video_intro) as VideoView
         intro.setMediaController(null)
@@ -23,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         intro.requestFocus()
         intro.start()
 
-        intro!!.setOnCompletionListener {
+        intro.setOnCompletionListener {
             //Toast.makeText(applicationContext, "Video completed",
                 //Toast.LENGTH_LONG).show()
             Log.d("INTRO", "Finished. Starting game activity")
@@ -46,12 +56,5 @@ class MainActivity : AppCompatActivity() {
         val intro = findViewById<View>(R.id.video_intro) as VideoView
         intro.seekTo(stopPosition)
         intro.start()
-    }
-
-    override fun onBackPressed() {
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
     }
 }
